@@ -284,6 +284,7 @@ export default function SignUp({ navigation }) {
   };
   // verify otp
   const verifyOtp = async () => {
+    setOtp('');
     if (otp.trim().length === 0) {
       Alert.alert('Enter OTP');
       return;
@@ -307,7 +308,7 @@ export default function SignUp({ navigation }) {
 
       console.log('otpResponse', data);
       if (data?.message !== 'Invalid OTP or Email.') {
-        navigation.navigate('ELogin');
+        navigation.navigate('Login');
       }
       Alert.alert(data?.message);
     } catch (error) {
@@ -349,12 +350,13 @@ export default function SignUp({ navigation }) {
 
       const data = await res.json();
       setLoading(false);
+      console.log('api response ', res);
 
       if (!res.ok) {
         Alert.alert('Signup Failed', data?.message || 'Try again');
         return;
       }
-
+      setOtp('');
       // Suppose your API returns OTP — e.g. data.otp
       setServerOtp(data.otp); // save OTP from API
       setOtpModal(true); // 💥 open OTP modal

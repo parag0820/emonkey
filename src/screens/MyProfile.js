@@ -25,6 +25,7 @@ const MyProfile = () => {
   const navigation = useNavigation();
   const [saved, setSaved] = useState(false);
   const [visibleChange, setVisibleChange] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loadingChange, setLoadingChange] = useState(false);
@@ -233,7 +234,7 @@ const MyProfile = () => {
     }
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     if (!newPassword || !confirmPassword) {
       Alert.alert('Error', 'Please fill in both fields.');
       return;
@@ -242,10 +243,30 @@ const MyProfile = () => {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
+
+    const userInfo = await AsyncStorage.getItem('userInfo');
+    const userData = JSON.parse(userInfo);
+    const userId = userData?.user_id;
+
+    const payload = {
+      id: userId,
+      old_password: currentPassword,
+      new_password: newPassword,
+      confirm_password: confirmPassword,
+    };
+
+    const response = await axios.post(
+      `https://emonkey.in/emonkey_admin/api/AdminController/change_password`,
+      payload,
+    );
+    console.log('userChnage password succesfully', response);
+    setConfirmPassword('');
+    setCurrentPassword('');
+    setNewPassword('');
     setTimeout(() => {
       setLoadingChange(false);
       setVisibleChange(false);
-      Alert.alert('Success', 'Password changed successfully!');
+      Alert.alert(response?.data?.message);
     }, 1500);
   };
 
@@ -418,7 +439,9 @@ const MyProfile = () => {
           visible={visibleChange}
           onClose={() => setVisibleChange(false)}
           onUpdate={handleUpdate}
+          currentPassword={currentPassword}
           newPassword={newPassword}
+          setCurrentPassword={setCurrentPassword}
           setNewPassword={setNewPassword}
           confirmPassword={confirmPassword}
           setConfirmPassword={setConfirmPassword}

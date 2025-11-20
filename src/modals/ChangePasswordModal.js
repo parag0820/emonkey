@@ -12,7 +12,9 @@ const ChangePasswordModal = ({
   visible,
   onClose,
   onUpdate,
+  currentPassword,
   newPassword,
+  setCurrentPassword,
   setNewPassword,
   confirmPassword,
   setConfirmPassword,
@@ -32,6 +34,15 @@ const ChangePasswordModal = ({
             Enter new password and confirm
           </Text>
 
+          {/* Current Password Input */}
+          <TextInput
+            value={currentPassword}
+            onChangeText={setCurrentPassword}
+            placeholder="Current Password"
+            // secureTextEntry
+            placeholderTextColor={'gray'}
+            style={styles.input}
+          />
           {/* New Password Input */}
           <TextInput
             value={newPassword}
@@ -39,7 +50,7 @@ const ChangePasswordModal = ({
             placeholder="New Password"
             // secureTextEntry
             placeholderTextColor={'gray'}
-            style={styles.input}
+            style={[styles.input, { marginTop: 12 }]}
           />
 
           {/* Confirm Password Input */}

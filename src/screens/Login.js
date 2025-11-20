@@ -398,6 +398,7 @@ export default function Login({ navigation, setIsLoggedIn }) {
                   placeholderTextColor={'gray'}
                   keyboardType="phone-pad"
                   autoCapitalize="none"
+                  maxLength={10}
                   style={[styles.input, { fontSize: inputFontSize }]}
                   returnKeyType="next"
                   // onSubmitEditing={() => {}}
