@@ -349,51 +349,19 @@ const FilterModal = ({ visible, onClose, onApply }) => {
   const [isPrime, setIsPrime] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
 
-  const categories = [
-    'Suggested Filters',
-    'Prime & Delivery',
-    'Brands',
-    'Price and Deals',
-    'RAM Size',
-    'Storage Capacity',
-    'Customer Reviews',
-    'Battery Capacity',
-    'Display Type',
-    'Display Size',
-    'Processor Speed',
-  ];
+  const categories = ['Place or Area', 'Price and Deals', 'Customer Reviews'];
 
   // Right panel filter options for each category
   const filterOptions = {
-    'Suggested Filters': [
-      'Value Picks',
-      'All Discounts',
-      "Today's Deals",
-      'Up to ₹500',
-      '₹500 - ₹6,900',
-      '₹6,900 - ₹17,000',
-      '₹17,000 - ₹23,000',
-      'Over ₹23,000',
-      'Get It Today',
-      'Get It by Tomorrow',
-      'Get It in 2 Days',
-      'Tomorrow by 11AM',
-    ],
-    'Prime & Delivery': ['Prime Eligible', 'Free Delivery', '1-Day Delivery'],
-    Brands: ['Samsung', 'Apple', 'OnePlus', 'Realme', 'Xiaomi', 'Motorola'],
+    'Place or Area': ['Goa', 'Indore', 'Surat', 'Ratlam', 'Delhi', 'Mumbai'],
     'Price and Deals': [
       'Under ₹5,000',
       '₹5,000 - ₹10,000',
       '₹10,000 - ₹25,000',
       '₹25,000+',
     ],
-    'RAM Size': ['2 GB', '4 GB', '6 GB', '8 GB', '12 GB'],
-    'Storage Capacity': ['32 GB', '64 GB', '128 GB', '256 GB'],
+
     'Customer Reviews': ['4★ & above', '3★ & above', '2★ & above'],
-    'Battery Capacity': ['3000 - 4000 mAh', '4000 - 5000 mAh', '5000+ mAh'],
-    'Display Type': ['AMOLED', 'LCD', 'IPS'],
-    'Display Size': ['Below 6"', '6.1" - 6.5"', 'Above 6.5"'],
-    'Processor Speed': ['2.0GHz+', '2.5GHz+', '3.0GHz+'],
   };
 
   const toggleTag = tag => {
@@ -455,8 +423,8 @@ const FilterModal = ({ visible, onClose, onApply }) => {
               {/* Prime Switch (only for Suggested Filters) */}
               {selectedCategory === 'Suggested Filters' && (
                 <View style={styles.primeRow}>
-                  <Text style={styles.primeText}>Prime</Text>
-                  <Switch value={isPrime} onValueChange={setIsPrime} />
+                  {/* <Text style={styles.primeText}>Prime</Text> */}
+                  {/* <Switch value={isPrime} onValueChange={setIsPrime} /> */}
                 </View>
               )}
 
@@ -487,9 +455,7 @@ const FilterModal = ({ visible, onClose, onApply }) => {
 
           {/* Bottom Apply Button */}
           <TouchableOpacity style={styles.applyBtn} onPress={handleApply}>
-            <Text style={styles.applyText}>
-              Show {Math.floor(Math.random() * 500 + 100)} results
-            </Text>
+            <Text style={styles.applyText}>Apply</Text>
           </TouchableOpacity>
         </View>
       </View>

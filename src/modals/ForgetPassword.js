@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.45)',
-    padding: 20,
+    padding: 12,
   },
   modalCard: {
     backgroundColor: '#fff',
@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   input: {
+    color: '#000',
     borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 10,

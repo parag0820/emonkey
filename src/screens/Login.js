@@ -7,7 +7,6 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  Modal,
   Alert,
   ScrollView,
   useWindowDimensions,
@@ -81,17 +80,30 @@ export default function Login({ navigation, setIsLoggedIn }) {
     return false;
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     setOtpLoading(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       setOtpLoading(false);
       setOtpVisible(false);
       console.log('OTP Verified:', otp);
+      const payload = {
+        email: forgotEmail,
+        otp,
+      };
+      try {
+        const reponseOtpVerify = await axios.post(
+          `https://emonkey.in/emonkey_admin/api/AdminController/verify_Forgot_otp`,
+          payload,
+        );
+        console.log('reponseOtpVerify', reponseOtpVerify);
+      } catch (error) {
+        console.log(error);
+      }
       setVisibleChange(true);
     }, 2000);
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     if (!newPassword || !confirmPassword) {
       Alert.alert('Error', 'Please fill in both fields.');
       return;
@@ -100,7 +112,23 @@ export default function Login({ navigation, setIsLoggedIn }) {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
+    const payload = {
+      email: forgotEmail,
+      new_password: newPassword,
+      confirm_password: confirmPassword,
+    };
+    console.log('payload', payload);
 
+    try {
+      const response = await axios.post(
+        `https://emonkey.in/emonkey_admin/api/AdminController/forgot_change_password`,
+        payload,
+        password,
+      );
+      console.log('response', response);
+    } catch (error) {
+      console.log(error);
+    }
     // setLoading(true);
     setTimeout(() => {
       setLoadingChange(false);
@@ -108,134 +136,6 @@ export default function Login({ navigation, setIsLoggedIn }) {
       Alert.alert('Success', 'Password changed successfully!');
     }, 1500);
   };
-
-  //   for saprate country code validation and mobile number
-
-  // const validate = () => {
-  //   const newErr = {};
-
-  //   // Email regex
-  //   const emailRegex =
-  //     /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i;
-
-  //   // ✅ Mobile regex — allow optional country/state code + 10 digits
-  //   const mobileRegex = /^(\+?\d{1,4}[-\s]?)?(\d{10})$/;
-
-  //   let countryCode = '';
-  //   let pureMobile = '';
-
-  //   if (!mobile.trim()) {
-  //     newErr.mobile = 'Mobile number is required';
-  //   } else {
-  //     // Remove all spaces and hyphens
-  //     const cleaned = mobile.replace(/[-\s]/g, '');
-
-  //     // Match the pattern
-  //     const match = cleaned.match(/^(\+?\d{1,4})?(\d{10})$/);
-
-  //     if (match) {
-  //       // Extract country code (if any)
-  //       countryCode = match[1] ? match[1] : '';
-  //       // Extract last 10 digits
-  //       pureMobile = match[2];
-  //     } else {
-  //       newErr.mobile = 'Enter a valid mobile number';
-  //     }
-  //   }
-
-  //   if (!email.trim()) {
-  //     newErr.email = 'Email is required';
-  //   } else if (!emailRegex.test(email)) {
-  //     newErr.email = 'Enter a valid email';
-  //   }
-
-  //   if (!password) {
-  //     newErr.password = 'Password is required';
-  //   } else if (password.length < 6) {
-  //     newErr.password = 'Password must be at least 6 characters';
-  //   }
-
-  //   setErrors(newErr);
-
-  //   // ✅ If valid, you can log or save both values
-  //   if (Object.keys(newErr).length === 0) {
-  //     console.log('Country Code:', countryCode);
-  //     console.log('Mobile Number:', pureMobile);
-  //     return { countryCode, pureMobile };
-  //   }
-
-  //   return false;
-  // };
-
-  // const validate = () => {
-  //   const newErr = {};
-
-  //   // Email regex (unchanged)
-  //   const emailRegex =
-  //     /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i;
-
-  //   // ✅ Mobile validation (with optional country code)
-  //   // Examples accepted: +919876543210, +1 5555555555, 9876543210
-  //   const mobileRegex = /^(\+\d{1,3}[- ]?)?\d{10}$/;
-
-  //   if (!mobile.trim()) {
-  //     newErr.mobile = 'Mobile number is required';
-  //   } else if (!mobileRegex.test(mobile)) {
-  //     newErr.mobile = 'Enter a valid mobile number with country code';
-  //   }
-
-  //   if (!email.trim()) {
-  //     newErr.email = 'Email is required';
-  //   } else if (!emailRegex.test(email)) {
-  //     newErr.email = 'Enter a valid email';
-  //   }
-
-  //   if (!password) {
-  //     newErr.password = 'Password is required';
-  //   } else if (password.length < 6) {
-  //     newErr.password = 'Password must be at least 6 characters';
-  //   }
-
-  //   setErrors(newErr);
-  //   return Object.keys(newErr).length === 0;
-  // };
-
-  // const validateLogin = () => {
-  //     const emailRegex =
-  //       /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i;
-
-  //     if (!password.trim()) {
-  //       Alert.alert('Password is required');
-  //       return false;
-  //     }
-
-  //     // If both entered → invalid
-  //     if (email.trim() && mobile.trim()) {
-  //       Alert.alert('Enter either Email OR Mobile, not both');
-  //       return false;
-  //     }
-
-  //     // If email is entered → validate email
-  //     if (email.trim()) {
-  //       if (!emailRegex.test(email)) {
-  //         Alert.alert('Enter valid email');
-  //         return false;
-  //       }
-  //       return true;
-  //     }
-
-  //     // If mobile is entered → validate mobile
-  //     if (mobile.trim()) {
-  //       if (mobile.length !== 10) {
-  //         Alert.alert('Enter valid 10-digit mobile number');
-  //         return false;
-  //       }
-  //       return true;
-  //     }
-
-  //     Alert.alert('Please enter Email or Mobile');
-  //     return false;
-  //   };
 
   const handleLogin = async () => {
     if (!validateLogin()) return;
@@ -276,6 +176,7 @@ export default function Login({ navigation, setIsLoggedIn }) {
       console.log('Login Error:', error);
     }
   };
+
   const onLogin = async () => {
     const validated = validate();
     if (!validated) return;
@@ -315,6 +216,17 @@ export default function Login({ navigation, setIsLoggedIn }) {
     setForgotLoading(true);
     try {
       // TODO: call forget-password API to send reset link / OTP
+      const payload = {
+        username: forgotEmail,
+      };
+      console.log('payload', payload);
+
+      const response = await axios.post(
+        `https://emonkey.in/emonkey_admin/api/AdminController/forgotpasswordd`,
+        payload,
+      );
+      console.log('forget pass response ', response?.data);
+
       setTimeout(() => {
         setForgotLoading(false);
         setForgotVisible(false);
