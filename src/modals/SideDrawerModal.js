@@ -139,7 +139,7 @@ const SideDrawerModal = ({ setIsLoggedIn, visible, onClose }) => {
                 style={styles.card}
               >
                 <Icon name="star-outline" size={22} color="#000" />
-                <Text style={styles.cardText}>Rate Us</Text>
+                <Text style={styles.cardText}>Reviews</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {

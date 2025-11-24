@@ -129,7 +129,7 @@ export default function MainScreens({ route }) {
       <Stack.Screen
         name="RateUs"
         component={RateUs}
-        options={{ headerShown: true, title: 'Rate Us' }}
+        options={{ headerShown: true, title: 'Reviews' }}
       />
       <Stack.Screen
         name="HelpSupport"
