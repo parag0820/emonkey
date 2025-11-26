@@ -1,3 +1,4 @@
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -13,7 +14,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import CustomDeleteModal from '../components/CustomDeleteModal';
 
 export default function MyReviewsScreen() {
   const { width } = useWindowDimensions();
@@ -23,6 +24,10 @@ export default function MyReviewsScreen() {
   const [newReview, setNewReview] = useState('');
   const [rating, setRating] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [deleteVisible, setDeleteVisible] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   const fontSize = width * 0.04;
   const iconSize = width * 0.065;
@@ -39,6 +44,7 @@ export default function MyReviewsScreen() {
       const responseRating = await axios.get(
         `https://emonkey.in/emonkey_admin/api/AdminController/ratinglist`,
       );
+      console.log('responseRating', responseRating?.data);
 
       const formatted = responseRating?.data?.data?.map(item => {
         const date = new Date(item.create_date);
@@ -84,6 +90,7 @@ export default function MyReviewsScreen() {
         payload,
       );
       console.log('rating Response ', review?.data);
+      handleGetReviews();
     } catch (error) {
       console.log(error);
     }
@@ -94,9 +101,61 @@ export default function MyReviewsScreen() {
     setRating(0);
   };
 
+  // edit api
+  const handleUpdateReview = async () => {
+    if (!newReview || rating === 0) {
+      return Alert.alert('Message', 'Review & Rating Required!');
+    }
+
+    const userInfo = await AsyncStorage.getItem('userInfo');
+    const userData = JSON.parse(userInfo);
+    const userId = userData?.user_id;
+
+    try {
+      const payload = {
+        id: editingId,
+        user_id: userId,
+        rating: rating,
+        tittle: newReview,
+      };
+
+      const response = await axios.post(
+        `https://emonkey.in/emonkey_admin/api/AdminController/updaterating/${editingId}`,
+        payload,
+      );
+
+      handleGetReviews();
+      setEditingId(null);
+      setRating(0);
+      setNewReview('');
+      setShowModal(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // delete api
+  const handleDeleteReview = async () => {
+    console.log('selectedId', selectedId);
+
+    try {
+      const response = await axios.get(
+        `https://emonkey.in/emonkey_admin/api/AdminController/ratingdelete/${selectedId}`,
+      );
+
+      // Remove deleted item from UI instantly
+      // setReviews(prev => prev.filter(r => r.id !== selectedId));
+      handleGetReviews();
+      setDeleteVisible(false);
+      setSelectedId(null);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     handleGetReviews();
-  }, [showModal]);
+  }, []);
 
   const renderStars = (selectedRating, isEditable = false) => (
     <View style={{ flexDirection: 'row' }}>
@@ -129,13 +188,24 @@ export default function MyReviewsScreen() {
             <Ionicons name="eye-outline" size={iconSize} color="#555" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={{ marginLeft: 10 }}>
-            <Ionicons name="create-outline" size={iconSize} color="#007AFF" />
+          <TouchableOpacity
+            style={{ marginHorizontal: 10 }}
+            onPress={() => {
+              setIsEditing(true);
+              setEditingId(item.id);
+              setNewReview(item.tittle);
+              setRating(item.rating);
+              setShowModal(true);
+            }}
+          >
+            <Ionicons name="create-outline" size={24} color="blue" />
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={{ marginLeft: 10 }}
-            onPress={() => setReviews(reviews.filter(a => a.id !== item.id))}
+            onPress={() => {
+              setSelectedId(item.id);
+              setDeleteVisible(true);
+            }}
           >
             <Ionicons name="trash-outline" size={iconSize} color="red" />
           </TouchableOpacity>
@@ -203,6 +273,7 @@ export default function MyReviewsScreen() {
 
             <TextInput
               placeholder="Write your review..."
+              placeholderTextColor={'gray'}
               style={[styles.input, { fontSize, padding: width * 0.03 }]}
               multiline
               value={newReview}
@@ -214,7 +285,7 @@ export default function MyReviewsScreen() {
 
             <TouchableOpacity
               style={[styles.saveBtn, { padding: width * 0.035 }]}
-              onPress={handleAddReview}
+              onPress={isEditing ? handleUpdateReview : handleAddReview}
             >
               <Text style={{ color: '#FFF', fontSize: width * 0.045 }}>
                 Save Review
@@ -236,6 +307,12 @@ export default function MyReviewsScreen() {
           </View>
         </View>
       </Modal>
+      {/* delete Modal */}
+      <CustomDeleteModal
+        visible={deleteVisible}
+        onConfirm={handleDeleteReview}
+        onClose={() => setDeleteVisible(false)}
+      />
     </View>
   );
 }
