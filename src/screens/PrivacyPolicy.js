@@ -1,4 +1,5 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -11,6 +12,34 @@ import {
 const { width } = Dimensions.get('window');
 
 const PrivacyPolicy = () => {
+  const [text, setText] = useState('');
+
+  const decodeHtml = value => {
+    if (!value) return '';
+    return value
+      .replace(/&amp;/g, '&')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/<br\s*\/?>/g, '\n')
+      .replace(/([a-z])([A-Z])/g, '$1 $2');
+  };
+
+  const getAboutUs = async () => {
+    try {
+      const res = await axios.get(
+        `https://emonkey.in/emonkey_admin/api/AdminController/Emonkeyprivacypolicy`,
+      );
+
+      const note = res?.data?.data?.[0]?.note || '';
+      setText(decodeHtml(note));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getAboutUs();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -19,11 +48,7 @@ const PrivacyPolicy = () => {
       >
         <Text style={styles.heading}>Privacy Policy</Text>
 
-        <Text style={styles.paragraph}>
-          Welcome to our Privacy Policy. Your privacy is critically important to
-          us. This document outlines the types of personal information we
-          collect, how we use it, and the measures we take to protect it.
-        </Text>
+        <Text style={styles.paragraph}>{text}</Text>
 
         <Text style={styles.subheading}>1. Information We Collect</Text>
         <Text style={styles.paragraph}>

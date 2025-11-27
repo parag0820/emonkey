@@ -68,7 +68,14 @@ export default function MainScreens({ route }) {
         component={Careers}
         options={{ headerShown: true, title: 'Careers' }}
       />
-      <Stack.Screen name="Terms" component={TermsAndConditions} />
+      <Stack.Screen
+        name="Terms"
+        component={TermsAndConditions}
+        options={{
+          headerShown: 'TermsAndConditions',
+          title: 'Terms & Conditions',
+        }}
+      />
       <Stack.Screen
         name="Listing"
         component={Listing}

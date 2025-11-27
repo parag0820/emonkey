@@ -1,4 +1,5 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,63 +7,47 @@ import {
   ScrollView,
   SafeAreaView,
   Dimensions,
-  Image,
 } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
 const AboutUs = () => {
+  const [aboutText, setAboutText] = useState('');
+
+  const decodeHtml = value => {
+    if (!value) return '';
+    return value
+      .replace(/&amp;/g, '&')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/<br\s*\/?>/g, '\n')
+      .replace(/([a-z])([A-Z])/g, '$1 $2');
+  };
+
+  const getAboutUs = async () => {
+    try {
+      const res = await axios.get(
+        `https://emonkey.in/emonkey_admin/api/AdminController/Emonkeyaboutus`,
+      );
+
+      const note = res?.data?.data?.[0]?.note || '';
+      setAboutText(decodeHtml(note));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getAboutUs();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}
       >
-        {/* Header Image or Logo */}
-        <Image
-          source={require('../assets/autoMobile.png')} // 👈 Replace with your app logo
-          style={styles.logo}
-          resizeMode="contain"
-        />
-
-        <Text style={styles.heading}>About Us</Text>
-
-        <Text style={styles.paragraph}>
-          Welcome to <Text style={styles.highlight}>Our App</Text> — your
-          trusted companion for smart and convenient healthcare solutions. Our
-          mission is to simplify your experience by providing secure, efficient,
-          and user-friendly services at your fingertips.
-        </Text>
-
-        <Text style={styles.subheading}>Our Mission</Text>
-        <Text style={styles.paragraph}>
-          We aim to empower users with seamless access to doctors, health
-          services, and wellness information. By combining technology with care,
-          we strive to make healthcare accessible for everyone, anytime,
-          anywhere.
-        </Text>
-
-        <Text style={styles.subheading}>Our Vision</Text>
-        <Text style={styles.paragraph}>
-          Our vision is to create a digital platform that connects people to
-          quality healthcare services without barriers. We believe that
-          technology can bring people closer to better health and well-being.
-        </Text>
-
         <Text style={styles.subheading}>Our Values</Text>
-        <Text style={styles.paragraph}>
-          • Integrity — We value honesty and transparency in all we do.{'\n'}•
-          Innovation — We constantly improve our platform for better
-          experiences.{'\n'}• Compassion — We care about the well-being of our
-          users.{'\n'}• Accessibility — We aim to make healthcare simple and
-          reachable.
-        </Text>
-
-        <Text style={styles.subheading}>Contact Us</Text>
-        <Text style={styles.paragraph}>
-          For any queries or feedback, reach out to us at:{' '}
-          <Text style={styles.highlight}>support@example.com</Text>
-        </Text>
+        <Text style={styles.paragraph}>{aboutText || 'Loading...'}</Text>
 
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -80,12 +65,6 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingHorizontal: width * 0.05,
     paddingVertical: 20,
-  },
-  logo: {
-    width: width * 0.4,
-    height: width * 0.4,
-    alignSelf: 'center',
-    marginBottom: 10,
   },
   heading: {
     fontSize: width * 0.07,

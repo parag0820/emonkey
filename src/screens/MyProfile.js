@@ -259,7 +259,6 @@ const MyProfile = () => {
       `https://emonkey.in/emonkey_admin/api/AdminController/change_password`,
       payload,
     );
-    console.log('userChnage password succesfully', response);
     setConfirmPassword('');
     setCurrentPassword('');
     setNewPassword('');

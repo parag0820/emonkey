@@ -194,7 +194,12 @@ const SideDrawerModal = ({ setIsLoggedIn, visible, onClose }) => {
               <Text style={styles.rowText}>Terms of Use</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => {}} style={styles.row}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('AboutUs');
+              }}
+              style={styles.row}
+            >
               <Icon name="information-circle-outline" size={24} color="#000" />
               <Text style={styles.rowText}>About Us</Text>
             </TouchableOpacity>
