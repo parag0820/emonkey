@@ -1,4 +1,5 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,39 +8,25 @@ import {
   ScrollView,
   useWindowDimensions,
 } from 'react-native';
+import BASE_URL from '../api/BaseUrl';
 
 const Subscription = () => {
   const { width } = useWindowDimensions();
+  const [subPlans, setPlans] = useState([]);
   const isTablet = width > 768;
 
-  const plans = [
-    {
-      id: 1,
-      name: 'Basic Plan',
-      price: '₹199 / month',
-      features: ['Access to basic content', 'Email support'],
-    },
-    {
-      id: 2,
-      name: 'Pro Plan',
-      price: '₹499 / month',
-      features: [
-        'Access to all content',
-        'Priority support',
-        'Download feature',
-      ],
-    },
-    {
-      id: 3,
-      name: 'Premium Plan',
-      price: '₹999 / month',
-      features: [
-        'All Pro features',
-        '1-on-1 expert sessions',
-        'Early access to new updates',
-      ],
-    },
-  ];
+  const SubscriptinPlans = async () => {
+    try {
+      const planResponse = await axios.get(`${BASE_URL}membershiplist`);
+      setPlans(planResponse?.data?.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    SubscriptinPlans();
+  }, []);
 
   return (
     <ScrollView
@@ -52,7 +39,7 @@ const Subscription = () => {
         Choose Your Subscription
       </Text>
 
-      {plans.map(plan => (
+      {subPlans.map(plan => (
         <View
           key={plan.id}
           style={[
@@ -64,20 +51,20 @@ const Subscription = () => {
           ]}
         >
           <Text style={[styles.planName, { fontSize: isTablet ? 22 : 18 }]}>
-            {plan.name}
-          </Text>
-          <Text style={[styles.price, { fontSize: isTablet ? 20 : 16 }]}>
-            {plan.price}
+            {plan?.plan_name}
           </Text>
 
-          {plan.features.map((feature, index) => (
-            <Text
-              key={index}
-              style={[styles.feature, { fontSize: isTablet ? 16 : 14 }]}
-            >
-              • {feature}
-            </Text>
-          ))}
+          <Text style={[styles.price, { fontSize: isTablet ? 20 : 16 }]}>
+            {plan?.duration}
+          </Text>
+
+          <Text style={[styles.feature, { fontSize: isTablet ? 16 : 14 }]}>
+            {plan.description}
+          </Text>
+
+          <Text style={[styles.price, { fontSize: isTablet ? 20 : 16 }]}>
+            ₹{plan?.price}
+          </Text>
 
           <TouchableOpacity
             style={[styles.button, { paddingVertical: isTablet ? 14 : 10 }]}

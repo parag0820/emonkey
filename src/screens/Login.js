@@ -17,6 +17,7 @@ import OTPVerificationModal from '../modals/OTPVerificationModal';
 import ChangePasswordModal from '../modals/ChangePasswordModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import BASE_URL from '../api/BaseUrl';
 
 export default function Login({ navigation, setIsLoggedIn }) {
   const { width } = useWindowDimensions();
@@ -92,7 +93,7 @@ export default function Login({ navigation, setIsLoggedIn }) {
       };
       try {
         const reponseOtpVerify = await axios.post(
-          `https://emonkey.in/emonkey_admin/api/AdminController/verify_Forgot_otp`,
+          `${BASE_URL}verify_Forgot_otp`,
           payload,
         );
         console.log('reponseOtpVerify', reponseOtpVerify);
@@ -121,7 +122,7 @@ export default function Login({ navigation, setIsLoggedIn }) {
 
     try {
       const response = await axios.post(
-        `https://emonkey.in/emonkey_admin/api/AdminController/forgot_change_password`,
+        `${BASE_URL}forgot_change_password`,
         payload,
         password,
       );
@@ -148,15 +149,12 @@ export default function Login({ navigation, setIsLoggedIn }) {
         password,
       };
 
-      const res = await axios.post(
-        'https://emonkey.in/emonkey_admin/api/AdminController/login',
-        payload,
-      );
+      const res = await axios.post(`${BASE_URL}login`, payload);
       const userInfo = res?.data?.user;
       await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
 
-      // const data = await res.json();
       setLoading(false);
+      // const data = await res.json();
       // console.log('LoginResponse ', data?.data);
 
       // if (!res.ok) {

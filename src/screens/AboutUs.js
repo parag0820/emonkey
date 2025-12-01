@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   Dimensions,
 } from 'react-native';
+import BASE_URL from '../api/BaseUrl';
 
 const { width } = Dimensions.get('window');
 
@@ -25,9 +26,7 @@ const AboutUs = () => {
 
   const getAboutUs = async () => {
     try {
-      const res = await axios.get(
-        `https://emonkey.in/emonkey_admin/api/AdminController/Emonkeyaboutus`,
-      );
+      const res = await axios.get(`${BASE_URL}Emonkeyaboutus`);
 
       const note = res?.data?.data?.[0]?.note || '';
       setAboutText(decodeHtml(note));

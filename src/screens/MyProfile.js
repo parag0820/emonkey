@@ -1,5 +1,6 @@
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-
 import React, { useState } from 'react';
 import {
   View,
@@ -18,8 +19,7 @@ import { useNavigation } from '@react-navigation/native';
 import CustomButton from '../components/CustomButton';
 import ChangePasswordModal from '../modals/ChangePasswordModal';
 import { useEffect } from 'react';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import BASE_URL from '../api/BaseUrl';
 
 const MyProfile = () => {
   const navigation = useNavigation();
@@ -51,12 +51,9 @@ const MyProfile = () => {
 
     const userData = JSON.parse(userInfo);
     const userId = userData?.user_id;
-    console.log('userInfo', userId);
 
     try {
-      const res = await axios.get(
-        `https://emonkey.in/emonkey_admin/api/AdminController/editprofileapi/${userId}`,
-      );
+      const res = await axios.get(`${BASE_URL}editprofileapi/${userId}`);
 
       console.log('res', res?.data);
 
@@ -215,15 +212,11 @@ const MyProfile = () => {
       // ------------------------------
       // API CALL
       // ------------------------------
-      const res = await axios.post(
-        'https://emonkey.in/emonkey_admin/api/AdminController/changeprofile',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+      const res = await axios.post(`${BASE_URL}changeprofile`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         },
-      );
+      });
 
       console.log('Update Response:', res.data);
       Alert.alert('Profile Updated!');
@@ -255,10 +248,7 @@ const MyProfile = () => {
       confirm_password: confirmPassword,
     };
 
-    const response = await axios.post(
-      `https://emonkey.in/emonkey_admin/api/AdminController/change_password`,
-      payload,
-    );
+    const response = await axios.post(`${BASE_URL}change_password`, payload);
     setConfirmPassword('');
     setCurrentPassword('');
     setNewPassword('');

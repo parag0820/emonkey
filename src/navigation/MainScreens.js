@@ -14,7 +14,6 @@ import Favourites from '../screens/Favourites';
 import Transactions from '../screens/Transactions';
 import RateUs from '../screens/RateUs';
 import HelpSupport from '../screens/HelpSupport';
-import RealEstate from '../screens/RealEstate';
 import AutoMobiles from '../screens/AutoMobiles';
 import Machinery from '../screens/Machinery';
 import Electronics from '../screens/Electronics';
@@ -26,6 +25,7 @@ import FoodListing from '../screens/FoodListing';
 import Subscription from '../screens/Subscription';
 import MyProfile from '../screens/MyProfile';
 import Careers from '../screens/Careers';
+import ProductGroup from '../screens/ProductGroup';
 
 const Stack = createStackNavigator();
 
@@ -89,9 +89,9 @@ export default function MainScreens({ route }) {
         options={{ headerShown: true, title: 'Profile' }}
       />
       <Stack.Screen
-        name="RealEstate"
-        component={RealEstate}
-        options={{ headerShown: true, title: 'Real Estate' }}
+        name="ProductGroup"
+        component={ProductGroup}
+        options={{ headerShown: true, title: 'Product Group' }}
       />
       <Stack.Screen
         name="AutoMobiles"

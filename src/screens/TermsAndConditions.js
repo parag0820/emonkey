@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Text, ScrollView, StyleSheet } from 'react-native';
+import BASE_URL from '../api/BaseUrl';
 
 const TermsAndConditions = () => {
   const [text, setText] = useState('');
@@ -16,9 +17,7 @@ const TermsAndConditions = () => {
 
   const getAboutUs = async () => {
     try {
-      const res = await axios.get(
-        `https://emonkey.in/emonkey_admin/api/AdminController/Emonkeyprivacypolicy`,
-      );
+      const res = await axios.get(`${BASE_URL}Emonkeyprivacypolicy`);
 
       const note = res?.data?.data?.[0]?.note || '';
       setText(decodeHtml(note));

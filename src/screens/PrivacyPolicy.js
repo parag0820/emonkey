@@ -1,4 +1,5 @@
 import axios from 'axios';
+import BASE_URL from '../api/BaseUrl';
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -25,9 +26,7 @@ const PrivacyPolicy = () => {
 
   const getAboutUs = async () => {
     try {
-      const res = await axios.get(
-        `https://emonkey.in/emonkey_admin/api/AdminController/Emonkeyprivacypolicy`,
-      );
+      const res = await axios.get(`${BASE_URL}Emonkeyprivacypolicy`);
 
       const note = res?.data?.data?.[0]?.note || '';
       setText(decodeHtml(note));
