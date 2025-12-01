@@ -82,6 +82,15 @@ const HomeScreen = ({ navigation, setIsLoggedIn }) => {
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROSrsfvEWYyLyGHbV7l-l8DMg-7U-I1rBRjQ&s',
     },
   ];
+
+  const moreItem = categories.find(item => item.Group_Name === 'More');
+
+  const others = categories.filter(item => item.Group_Name !== 'More');
+
+  const displayCategories = moreItem
+    ? [...others.slice(0, 7), moreItem] // 7 items + More
+    : others.slice(0, 8); // if API doesn't send More
+
   if (loading) {
     return <Loader />;
   }
@@ -109,35 +118,39 @@ const HomeScreen = ({ navigation, setIsLoggedIn }) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Categories */}
         <View style={styles.categoryRow}>
-          {categories.map(item => (
-            <TouchableOpacity
-              key={item.id}
-              style={[styles.categoryItem, { width: width * 0.22 }]}
-              activeOpacity={0.7}
-              onPress={() => {
-                if (item.Group_Name.trim() === 'More') {
-                  navigation.navigate('MoreHome');
-                } else {
-                  navigation.navigate('ProductGroup', { categoryId: item.id });
-                }
-              }}
-            >
-              <Image
-                source={{
-                  uri: item.images || 'https://via.placeholder.com/80',
+          <>
+            {displayCategories.map(item => (
+              <TouchableOpacity
+                key={item.id}
+                style={[styles.categoryItem, { width: width * 0.22 }]}
+                activeOpacity={0.7}
+                onPress={() => {
+                  if (item.Group_Name.trim() === 'More') {
+                    navigation.navigate('MoreHome');
+                  } else {
+                    navigation.navigate('ProductGroup', {
+                      categoryId: item.id,
+                    });
+                  }
                 }}
-                style={{ width: 40, height: 40, borderRadius: 10 }}
-                resizeMode="contain"
-              />
-
-              <Text
-                style={[styles.categoryText, { fontSize: width * 0.03 }]}
-                numberOfLines={2}
               >
-                {item.Group_Name}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Image
+                  source={{
+                    uri: item?.images || 'https://via.placeholder.com/80',
+                  }}
+                  style={{ width: 40, height: 40, borderRadius: 10 }}
+                  resizeMode="contain"
+                />
+
+                <Text
+                  style={[styles.categoryText, { fontSize: width * 0.03 }]}
+                  numberOfLines={2}
+                >
+                  {item.Group_Name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </>
         </View>
 
         {/* Trending Services */}
