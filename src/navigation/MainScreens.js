@@ -26,6 +26,7 @@ import Subscription from '../screens/Subscription';
 import MyProfile from '../screens/MyProfile';
 import Careers from '../screens/Careers';
 import ProductGroup from '../screens/ProductGroup';
+import ProductDetail from '../screens/ProductDetails';
 
 const Stack = createStackNavigator();
 
@@ -92,6 +93,11 @@ export default function MainScreens({ route }) {
         name="ProductGroup"
         component={ProductGroup}
         options={{ headerShown: true, title: 'Product Group' }}
+      />
+      <Stack.Screen
+        name="ProductDetail"
+        component={ProductDetail}
+        options={{ headerShown: true, title: 'Product Detail' }}
       />
       <Stack.Screen
         name="AutoMobiles"
