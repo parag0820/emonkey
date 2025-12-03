@@ -18,6 +18,7 @@ import ChangePasswordModal from '../modals/ChangePasswordModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import BASE_URL from '../api/BaseUrl';
+import Toast from 'react-native-toast-message';
 
 export default function Login({ navigation, setIsLoggedIn }) {
   const { width } = useWindowDimensions();
@@ -49,20 +50,33 @@ export default function Login({ navigation, setIsLoggedIn }) {
       /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i;
 
     if (!password.trim()) {
-      Alert.alert('Password is required');
+      Toast.show({
+        type: 'error',
+        text1: 'Login Failed',
+        text2: 'Password is required',
+      });
       return false;
     }
 
     // If both entered → invalid
     if (email.trim() && mobile.trim()) {
-      Alert.alert('Enter either Email OR Mobile, not both');
+      Toast.show({
+        type: 'error',
+        text1: 'Login Failed',
+        text2: 'Enter either Email OR Mobile, not both',
+      });
+
       return false;
     }
 
     // If email is entered → validate email
     if (email.trim()) {
       if (!emailRegex.test(email)) {
-        Alert.alert('Enter valid email');
+        Toast.show({
+          type: 'error',
+          text1: 'Login Failed',
+          text2: 'Enter valid email',
+        });
         return false;
       }
       return true;
@@ -71,13 +85,16 @@ export default function Login({ navigation, setIsLoggedIn }) {
     // If mobile is entered → validate mobile
     if (mobile.trim()) {
       if (mobile.length !== 10) {
-        Alert.alert('Enter valid 10-digit mobile number');
+        Toast.show({
+          type: 'error',
+          text1: 'Login Failed',
+          text2: 'Enter valid 10-digit mobile number',
+        });
         return false;
       }
       return true;
     }
 
-    Alert.alert('Please enter Email or Mobile');
     return false;
   };
 
@@ -118,7 +135,6 @@ export default function Login({ navigation, setIsLoggedIn }) {
       new_password: newPassword,
       confirm_password: confirmPassword,
     };
-    console.log('payload', payload);
 
     try {
       const response = await axios.post(
@@ -151,58 +167,25 @@ export default function Login({ navigation, setIsLoggedIn }) {
 
       const res = await axios.post(`${BASE_URL}login`, payload);
       const userInfo = res?.data?.user;
+
       await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
-
-      setLoading(false);
-      // const data = await res.json();
-      // console.log('LoginResponse ', data?.data);
-
-      // if (!res.ok) {
-      //   Alert.alert(data.message || 'Login failed');
-      //   return;
-      // }
-
-      Alert.alert('Login successful!');
       await AsyncStorage.setItem('isLoggedIn', 'true');
+
+      Toast.show({
+        type: 'success',
+        text1: 'Login Successful',
+        text2: 'Welcome back!',
+      });
+      setLoading(false);
       setIsLoggedIn(true);
-      setTimeout(() => {
-        setLoading(false);
-      }, 800);
     } catch (error) {
       setLoading(false);
-      Alert.alert('Network error, please try again');
+      Toast.show({
+        type: 'error',
+        text1: 'Login Failed',
+        text2: 'Please check your credentials',
+      });
       console.log('Login Error:', error);
-    }
-  };
-
-  const onLogin = async () => {
-    const validated = validate();
-    if (!validated) return;
-
-    const { email, pureMobile, countryCode, password } = validated;
-
-    setLoading(true);
-    try {
-      // Example payload logic:
-      const payload = pureMobile
-        ? { mobile: pureMobile, countryCode, password }
-        : { email, password };
-
-      console.log('Login payload:', payload);
-
-      // Example API call
-      // const response = await axios.post('https://emonkey.in/admin_login.php', payload);
-
-      await AsyncStorage.setItem('isLoggedIn', 'true');
-      setIsLoggedIn(true);
-
-      setTimeout(() => {
-        setLoading(false);
-        // navigation.navigate('RootNavigator'); // navigate after successful login
-      }, 800);
-    } catch (err) {
-      setLoading(false);
-      Alert.alert('Login failed', err.message || 'Please try again');
     }
   };
 
@@ -217,13 +200,8 @@ export default function Login({ navigation, setIsLoggedIn }) {
       const payload = {
         username: forgotEmail,
       };
-      console.log('payload', payload);
 
-      const response = await axios.post(
-        `https://emonkey.in/emonkey_admin/api/AdminController/forgotpasswordd`,
-        payload,
-      );
-      console.log('forget pass response ', response?.data);
+      const response = await axios.post(`${BASE_URL}forgotpasswordd`, payload);
 
       setTimeout(() => {
         setForgotLoading(false);

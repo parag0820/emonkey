@@ -12,6 +12,8 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
+import Loader from '../components/Loader';
+import Toast from 'react-native-toast-message';
 const { width } = Dimensions.get('window');
 
 export default function ProductDetail() {
@@ -39,17 +41,24 @@ export default function ProductDetail() {
       console.log('Error fetching product details:', error);
     }
   };
+  const handleBuy = () => {
+    Toast.show({
+      type: 'success',
+      text1: 'Success!',
+      text2: 'Your action completed.',
+      position: 'top',
+      props: {
+        style: { width: '100%' },
+      },
+    });
+  };
 
   useEffect(() => {
     getProductDetails();
   }, []);
 
   if (!productDetails) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Loading product...</Text>
-      </View>
-    );
+    return <Loader />;
   }
 
   // Map API → UI product
@@ -171,7 +180,7 @@ export default function ProductDetail() {
           <Text style={styles.cartBtnText}>Add to Cart</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.buyBtn}>
+        <TouchableOpacity onPress={handleBuy} style={styles.buyBtn}>
           <Text style={styles.buyBtnText}>Buy Now</Text>
         </TouchableOpacity>
       </View>

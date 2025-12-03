@@ -1,4 +1,4 @@
-import React from 'react';
+import axios from 'axios';
 import {
   View,
   Text,
@@ -8,37 +8,55 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import BASE_URL from '../api/BaseUrl';
+import { useEffect, useState } from 'react';
 
-const notifications = [
-  {
-    id: '1',
-    title: 'Order Confirmed',
-    message: 'Your order #12345 has been confirmed.',
-    time: '2 hours ago',
-  },
-  {
-    id: '2',
-    title: 'New Offer',
-    message: 'Get 20% off on your next purchase!',
-    time: '1 day ago',
-  },
-  {
-    id: '3',
-    title: 'Payment Successful',
-    message: 'You have successfully paid ₹299.',
-    time: '3 days ago',
-  },
-  {
-    id: '4',
-    title: 'Account Updated',
-    message: 'Your profile information has been updated.',
-    time: '1 week ago',
-  },
-];
+// FORMAT DATE → TIME AGO
+const formatTimeAgo = dateString => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now - date;
+
+  const seconds = Math.floor(diffMs / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60) return 'Just now';
+  if (minutes < 60) return `${minutes} min ago`;
+  if (hours < 24) return `${hours} hours ago`;
+  if (days === 1) return 'Yesterday';
+  if (days <= 7) return `${days} days ago`;
+
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
 
 const Notification = ({ navigation }) => {
-  const { width, height } = useWindowDimensions();
+  const { width } = useWindowDimensions();
+  const [allNotifications, setAllNotifications] = useState([]);
   const isTablet = width > 768;
+
+  const getNotifications = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}notificationlist`);
+
+      const sorted = response?.data?.data?.sort(
+        (a, b) => new Date(b.created_date) - new Date(a.created_date),
+      );
+
+      setAllNotifications(sorted);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getNotifications();
+  }, []);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -51,36 +69,36 @@ const Notification = ({ navigation }) => {
       ]}
     >
       <Text style={[styles.title, { fontSize: isTablet ? 20 : 16 }]}>
-        {item.title}
+        {item.tittle}
       </Text>
+
       <Text style={[styles.message, { fontSize: isTablet ? 16 : 13 }]}>
-        {item.message}
+        {item.description}
       </Text>
+
       <Text style={[styles.time, { fontSize: isTablet ? 14 : 12 }]}>
-        {item.time}
+        {formatTimeAgo(item.created_date)}
       </Text>
     </TouchableOpacity>
   );
 
   return (
     <View style={[styles.container, { paddingHorizontal: isTablet ? 40 : 16 }]}>
-      <View
-        style={{
-          flexDirection: 'row',
-        }}
-      >
+      <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity
           style={{ marginRight: 20 }}
           onPress={() => navigation.goBack()}
         >
           <Icon name="arrow-back-outline" size={28} color="#00695C" />
         </TouchableOpacity>
+
         <Text style={[styles.header, { fontSize: isTablet ? 28 : 20 }]}>
           Notifications
         </Text>
       </View>
+
       <FlatList
-        data={notifications}
+        data={allNotifications}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         contentContainerStyle={{
@@ -123,7 +141,6 @@ const styles = StyleSheet.create({
   message: {
     color: '#555',
     marginTop: 4,
-    lineHeight: 20,
   },
   time: {
     color: '#888',

@@ -1,6 +1,6 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import {
-  View,
   Text,
   TextInput,
   TouchableOpacity,
@@ -8,18 +8,41 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
+import BASE_URL from '../api/BaseUrl';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const HelpSupport = () => {
+const HelpSupport = ({ navigation }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!title || !description) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-    // You can call your API here
-    Alert.alert('Submitted', 'Your query has been submitted successfully.');
+    const userInfo = await AsyncStorage.getItem('userInfo');
+    const userData = JSON.parse(userInfo);
+    const userId = userData?.user_id;
+
+    const payload = {
+      user_id: userId,
+      tittle: title,
+      description,
+    };
+
+    try {
+      const helpResponse = await axios.post(`${BASE_URL}helpSupport`, payload);
+      const data = helpResponse?.data?.message;
+      if (data === `Help and Support added successfully.`) {
+        Alert.alert('Submitted', 'Your query has been submitted successfully.');
+        setTitle('');
+        setDescription('');
+        navigation.goBack();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
     setTitle('');
     setDescription('');
   };

@@ -248,6 +248,7 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import BASE_URL from '../api/BaseUrl';
 
 export default function SignUp({ navigation }) {
   const { width } = useWindowDimensions();
@@ -339,18 +340,14 @@ export default function SignUp({ navigation }) {
         c_password: confirmPassword,
       };
 
-      const res = await fetch(
-        'https://emonkey.in/emonkey_admin/api/AdminController/emonkeysignup',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        },
-      );
+      const res = await fetch(`${BASE_URL}emonkeysignup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
       const data = await res.json();
       setLoading(false);
-      console.log('api response ', res);
 
       if (!res.ok) {
         Alert.alert('Signup Failed', data?.message || 'Try again');
