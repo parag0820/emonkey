@@ -27,6 +27,7 @@ import MyProfile from '../screens/MyProfile';
 import Careers from '../screens/Careers';
 import ProductGroup from '../screens/ProductGroup';
 import ProductDetail from '../screens/ProductDetails';
+import Chat from '../screens/Chat';
 
 const Stack = createStackNavigator();
 
@@ -58,6 +59,11 @@ export default function MainScreens({ route }) {
         name="AboutUs"
         component={AboutUs}
         options={{ headerShown: true, title: 'About Us' }}
+      />
+      <Stack.Screen
+        name="Chat"
+        component={Chat}
+        options={{ headerShown: true, title: 'Messaging' }}
       />
       <Stack.Screen
         name="Subscription"

@@ -218,6 +218,15 @@ const SideDrawerModal = ({ setIsLoggedIn, visible, onClose }) => {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
+                navigation.navigate('Chat');
+              }}
+              style={styles.row}
+            >
+              <Icon name="chatbubble-outline" size={22} color="#000" />
+              <Text style={styles.rowText}>Message</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
                 navigation.navigate('Careers');
               }}
               style={styles.row}
