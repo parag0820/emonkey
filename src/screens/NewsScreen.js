@@ -14,7 +14,7 @@ import CustomHeader from '../components/CustomHeader';
 import SideDrawerModal from '../modals/SideDrawerModal';
 import { useFocusEffect } from '@react-navigation/native';
 
-const NewsScreen = ({ navigation }) => {
+const NewsScreen = ({ navigation, setIsLoggedIn }) => {
   const { width, height } = useWindowDimensions();
   const [drawerVisible, setDrawerVisible] = useState(false);
 
@@ -134,6 +134,7 @@ const NewsScreen = ({ navigation }) => {
       <SideDrawerModal
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}
+        setIsLoggedIn={setIsLoggedIn}
       />
     </View>
   );

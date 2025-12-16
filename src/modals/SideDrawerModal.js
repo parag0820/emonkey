@@ -40,7 +40,7 @@ const SideDrawerModal = ({ setIsLoggedIn, visible, onClose }) => {
     }
   }, [visible]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -48,14 +48,9 @@ const SideDrawerModal = ({ setIsLoggedIn, visible, onClose }) => {
         onPress: async () => {
           try {
             await AsyncStorage.removeItem('isLoggedIn');
-            onClose(); // close drawer first
-            setIsLoggedIn(false); // trigger root navigation to Auth/Login
-
-            // if you want extra safety:
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Auth' }], // must match your Auth/Login stack name
-            });
+            await AsyncStorage.removeItem('userRole');
+            setIsLoggedIn(false); // 🔥 Automatic redirect handled by RootNavigator
+            onClose();
           } catch (error) {
             console.log('Logout error:', error);
           }
@@ -207,6 +202,15 @@ const SideDrawerModal = ({ setIsLoggedIn, visible, onClose }) => {
             {/* <View style={styles.row}></View> */}
             <Text style={styles.sectionLabel}>Other</Text>
 
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('MyBookingList');
+              }}
+              style={styles.row}
+            >
+              <Icon name="calendar-outline" size={24} color="#000" />
+              <Text style={styles.rowText}>My BookingList</Text>
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('Subscription');

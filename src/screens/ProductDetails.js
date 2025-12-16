@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import Loader from '../components/Loader';
 import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width } = Dimensions.get('window');
 
 export default function ProductDetail() {
@@ -61,7 +62,6 @@ export default function ProductDetail() {
     return <Loader />;
   }
 
-  // Map API → UI product
   const product = {
     name: productDetails.product_name,
     image: productDetails.main_image ?? productDetails.image,
@@ -81,6 +81,37 @@ export default function ProductDetail() {
       { label: 'Measure Group', value: productDetails.Measure_Group },
       { label: 'Measure Category', value: productDetails.Measure_Category },
     ],
+  };
+
+  const handleAddtoCart = async () => {
+    try {
+      const userDeatil = await AsyncStorage.getItem(`userInfo`);
+      const userInfo = JSON.parse(userDeatil);
+      const userId = userInfo?.user_id;
+      const cartItem = {
+        user_id: userId,
+        prouct_id: ItemDetails?.id,
+        qty,
+      };
+
+      const cartResponse = await axios.post(
+        `${BASE_URL}/userbooking`,
+        cartItem,
+      );
+      Toast.show({
+        type: 'success',
+        text1: 'Added to Cart',
+        text2: `${ItemDetails.product_name} has been added to your cart.`,
+        position: 'top',
+        props: {
+          style: { width: '100%' },
+        },
+      });
+    } catch (error) {
+      log('Error adding to cart:', error);
+    } finally {
+      navigation.goBack();
+    }
   };
 
   return (
@@ -176,7 +207,7 @@ export default function ProductDetail() {
 
       {/* Bottom Buttons */}
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.cartBtn}>
+        <TouchableOpacity onPress={handleAddtoCart} style={styles.cartBtn}>
           <Text style={styles.cartBtnText}>Add to Cart</Text>
         </TouchableOpacity>
 

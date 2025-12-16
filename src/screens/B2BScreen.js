@@ -71,7 +71,7 @@ const suppliers = [
   },
 ];
 
-const B2BScreen = ({ navigation }) => {
+const B2BScreen = ({ navigation, setIsLoggedIn }) => {
   const { width } = useWindowDimensions();
   const [drawerVisible, setDrawerVisible] = useState(false);
 
@@ -98,6 +98,7 @@ const B2BScreen = ({ navigation }) => {
       >
         <TextInput
           placeholder="Search for business ,services ,products..."
+          placeholderTextColor={'gray'}
           style={[styles.searchInput, { fontSize: width * 0.035 }]}
         />
         <Icon name="search" size={width * 0.07} color="red" />
@@ -154,6 +155,7 @@ const B2BScreen = ({ navigation }) => {
         <SideDrawerModal
           visible={drawerVisible}
           onClose={() => setDrawerVisible(false)}
+          setIsLoggedIn={setIsLoggedIn}
         />
       </ScrollView>
     </View>

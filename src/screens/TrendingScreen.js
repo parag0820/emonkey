@@ -15,7 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import SideDrawerModal from '../modals/SideDrawerModal';
 import CustomButton from '../components/CustomButton';
 
-const TrendingScreen = ({ navigation }) => {
+const TrendingScreen = ({ navigation, setIsLoggedIn }) => {
   const { width } = useWindowDimensions();
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -136,6 +136,7 @@ const TrendingScreen = ({ navigation }) => {
       >
         <TextInput
           placeholder="Search for business ,services ,products..."
+          placeholderTextColor={'gray'}
           style={[styles.searchInput, { fontSize: width * 0.035 }]}
         />
         <Icon name="search" size={width * 0.07} color="red" />
@@ -236,6 +237,7 @@ const TrendingScreen = ({ navigation }) => {
       <SideDrawerModal
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}
+        setIsLoggedIn={setIsLoggedIn}
       />
     </View>
   );

@@ -24,18 +24,20 @@ const ProductGroup = ({ navigation }) => {
 
   const route = useRoute();
   const { categoryId } = route?.params;
+  console.log('products', products);
 
   // ✅ Fetch Products from API
   const getProducts = async () => {
     setLoading(true);
+
     try {
       const res = await axios.get(`${BASE_URL}productlistbyid/${categoryId}`);
-      const apiData = res.data.data || [];
+      const apiData = res?.data?.data || [];
 
       // Remove HTML tags from description
-      const cleanData = apiData.map(item => ({
+      const cleanData = apiData?.map(item => ({
         ...item,
-        description: item.description.replace(/<[^>]*>?/gm, ''),
+        description: item?.description.replace(/<[^>]*>?/gm, ''),
       }));
 
       setProducts(cleanData);
@@ -54,10 +56,17 @@ const ProductGroup = ({ navigation }) => {
   // 🔍 Search products
   const handleSearch = text => {
     setSearchText(text);
+
+    const query = text.toLowerCase();
+
     setFilteredData(
-      products.filter(item =>
-        item.product_name.toLowerCase().includes(text.toLowerCase()),
-      ),
+      products.filter(item => {
+        const nameMatch = item?.product_name.toLowerCase().includes(query);
+        const categoryMatch = item?.category_name.toLowerCase().includes(query);
+        const priceMatch = String(item?.price).toLowerCase().includes(query);
+
+        return nameMatch || categoryMatch || priceMatch;
+      }),
     );
   };
 
@@ -67,9 +76,9 @@ const ProductGroup = ({ navigation }) => {
 
     if (filters.productName) {
       data = data.filter(item =>
-        item.product_name
+        item?.product_name
           .toLowerCase()
-          .includes(filters.productName.toLowerCase()),
+          .includes(filters?.productName.toLowerCase()),
       );
     }
 
@@ -82,11 +91,11 @@ const ProductGroup = ({ navigation }) => {
       style={styles.card}
       onPress={() => navigation.navigate('ProductDetail', { product: item })}
     >
-      <Image source={{ uri: item.main_image }} style={styles.image} />
+      <Image source={{ uri: item?.main_image }} style={styles.image} />
 
       <View style={styles.infoContainer}>
-        <Text style={styles.title}>{item.product_name}</Text>
-        <Text style={styles.description}>{item.description}</Text>
+        <Text style={styles.title}>{item?.product_name}</Text>
+        <Text style={styles.description}>{item?.description}</Text>
       </View>
     </TouchableOpacity>
   );

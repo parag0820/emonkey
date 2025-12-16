@@ -22,6 +22,8 @@ const HomeScreen = ({ navigation, setIsLoggedIn }) => {
   const { width, height } = useWindowDimensions();
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [specialOffers, setSpecialOffers] = useState([]);
+  const [services, setSevices] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const getCategories = async () => {
@@ -35,26 +37,42 @@ const HomeScreen = ({ navigation, setIsLoggedIn }) => {
       setLoading(false);
     }
   };
+  const getServices = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`${BASE_URL}serviceslistbyid`);
+      setSevices(res?.data?.data || []);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const getSpecialOffers = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`${BASE_URL}specialproductlistbyid`);
+      setSpecialOffers(res?.data?.data || []);
+      console.log('res?.data?.data', res?.data?.data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {
       getCategories();
+      getServices();
+      getSpecialOffers();
       return () => {
         // When navigating away (unfocused), close the drawer
-
         setDrawerVisible(false);
       };
     }, []),
   );
 
-  const trending = [
-    {
-      name: 'Appliance Repair',
-      image: {
-        uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZye1zzi-zl_LpvUpnKcLGX_swWt8aVmC1GQ&s',
-      },
-    },
-  ];
   // Your offers array
   const offers = [
     {
@@ -158,20 +176,31 @@ const HomeScreen = ({ navigation, setIsLoggedIn }) => {
           Trending Services near you
         </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {trending.map((service, index) => (
-            <ImageBackground
+          {services.map((service, index) => (
+            <TouchableOpacity
               key={index}
-              source={service.image}
-              style={[
-                styles.serviceCard,
-                { width: width * 0.4, height: height * 0.18 },
-              ]}
-              imageStyle={{ borderRadius: 10 }}
+              activeOpacity={0.8}
+              onPress={() =>
+                navigation.navigate('ProductDetail', { product: service })
+              }
             >
-              <Text style={[styles.serviceText, { fontSize: width * 0.04 }]}>
-                {service.name}
-              </Text>
-            </ImageBackground>
+              <ImageBackground
+                source={{ uri: service?.main_image }}
+                style={[
+                  styles.serviceCard,
+                  { width: width * 0.4, height: height * 0.18 },
+                ]}
+                imageStyle={{ borderRadius: 10 }}
+              >
+                <View style={styles.imageView}>
+                  <Text
+                    style={[styles.serviceText, { fontSize: width * 0.04 }]}
+                  >
+                    {service.product_name}
+                  </Text>
+                </View>
+              </ImageBackground>
+            </TouchableOpacity>
           ))}
         </ScrollView>
 
@@ -185,22 +214,22 @@ const HomeScreen = ({ navigation, setIsLoggedIn }) => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.scrollContainer}
           >
-            {offers.map(item => (
+            {specialOffers.map(item => (
               <TouchableOpacity key={item.id}>
                 {/* ✅ Move key here */}
                 <ImageBackground
-                  source={{ uri: item.image }}
+                  source={{ uri: item?.main_image }}
                   style={[
                     styles.dealCard,
                     { width: width * 0.28, height: height * 0.18 },
                   ]}
                   imageStyle={{ borderRadius: 12 }}
                 >
-                  <View style={styles.overlay}>
+                  <View style={styles.imageView}>
                     <Text
                       style={[styles.dealText, { fontSize: width * 0.035 }]}
                     >
-                      {item.title}
+                      {item?.product_name}
                     </Text>
                   </View>
                 </ImageBackground>
@@ -228,6 +257,14 @@ const styles = StyleSheet.create({
   },
   avatar: { borderRadius: 50 },
   logo: { fontSize: 20, fontWeight: 'bold' },
+  imageView: {
+    backgroundColor: '#000000a0',
+    width: '100%',
+    padding: 6,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    alignItems: 'center',
+  },
   image: {
     width: 50,
     height: 50,
